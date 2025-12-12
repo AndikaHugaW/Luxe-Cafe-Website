@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Quote } from 'lucide-react'
 
 const testimonials = [
   {
@@ -104,38 +104,69 @@ export default function Testimonials() {
         </div>
 
         {/* Testimonial Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
           {visibleTestimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id}
-              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300"
+              className="group relative bg-white rounded-2xl p-8 lg:p-10 shadow-lg hover:shadow-2xl border border-dark-blue/5 hover:border-dark-blue/10 transition-all duration-500 overflow-hidden"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
+              whileHover={{ y: -5 }}
             >
+              {/* Decorative Gradient Background */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-dark-blue/5 to-transparent rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              {/* Quote Icon */}
+              <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-dark-blue/5 flex items-center justify-center opacity-50 group-hover:opacity-100 group-hover:bg-dark-blue/10 transition-all duration-300">
+                <Quote className="w-6 h-6 text-dark-blue/40 group-hover:text-dark-blue/60" />
+              </div>
+
               {/* Client Info */}
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-                  <div 
-                    className="w-full h-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${testimonial.avatar})` }}
-                  />
+              <div className="flex flex-col items-center text-center mb-6 relative z-10">
+                {/* Avatar with decorative ring */}
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-dark-blue/20 to-dark-blue/10 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 ring-4 ring-dark-blue/5 group-hover:ring-dark-blue/10 transition-all duration-300 shadow-lg">
+                    <div 
+                      className="w-full h-full bg-cover bg-center"
+                      style={{ backgroundImage: `url(${testimonial.avatar})` }}
+                    />
+                  </div>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-dark-blue text-sm">
+                  <h4 className="font-bold text-dark-blue text-lg lg:text-xl mb-1.5">
                     {testimonial.name}
                   </h4>
-                  <p className="text-xs text-dark-blue/60">
+                  <p className="text-sm text-dark-blue/60 font-medium">
                     {testimonial.title}
                   </p>
+                </div>
+
+                {/* Rating Stars */}
+                <div className="flex gap-1 mt-3">
+                  {[...Array(5)].map((_, i) => (
+                    <svg
+                      key={i}
+                      className="w-4 h-4 text-amber-400 fill-current"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                  ))}
                 </div>
               </div>
 
               {/* Testimonial Text */}
-              <p className="text-dark-blue/80 text-sm leading-relaxed">
-                {testimonial.text}
-              </p>
+              <div className="relative z-10">
+                <p className="text-dark-blue/80 text-base lg:text-lg leading-relaxed text-center font-light">
+                  "{testimonial.text}"
+                </p>
+              </div>
+
+              {/* Bottom Accent Line */}
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-dark-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </motion.div>
           ))}
         </div>

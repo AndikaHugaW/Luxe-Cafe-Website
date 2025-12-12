@@ -25,20 +25,20 @@ export default function AboutDetail() {
           </motion.div>
 
           {/* Right Side - Content */}
-          <div className="space-y-6">
+          <div className="space-y-8 lg:space-y-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <p className="text-sm uppercase tracking-wider text-dark-blue/70 font-semibold mb-2">
+              <p className="text-sm uppercase tracking-wider text-dark-blue/70 font-semibold mb-3">
                 ABOUT US
               </p>
-              <h2 className="text-4xl lg:text-5xl font-bold text-dark-blue mb-6 leading-tight">
+              <h2 className="text-4xl lg:text-5xl font-bold text-dark-blue mb-6 lg:mb-8 leading-tight">
                 Where We Do Business –<br />LUXE CAFE
               </h2>
-              <p className="text-lg text-dark-blue/80 leading-relaxed">
+              <p className="text-lg lg:text-xl text-dark-blue/80 leading-relaxed">
                 LUXE CAFE aims to create a flexible co-working environment that provides solutions 
                 to a wide variety of working professionals. The best place to do business with 
                 the best coffee of course! LUXE CAFE is located directly in the heart of the city, 
@@ -47,9 +47,9 @@ export default function AboutDetail() {
             </motion.div>
 
             {/* Two Small Images */}
-            <div className="grid grid-cols-2 gap-4 mt-8">
+            <div className="grid grid-cols-2 gap-4 lg:gap-6">
               <motion.div
-                className="relative h-48 lg:h-56 rounded-xl overflow-hidden"
+                className="relative h-48 lg:h-64 rounded-xl overflow-hidden"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -63,7 +63,7 @@ export default function AboutDetail() {
                 />
               </motion.div>
               <motion.div
-                className="relative h-48 lg:h-56 rounded-xl overflow-hidden"
+                className="relative h-48 lg:h-64 rounded-xl overflow-hidden"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

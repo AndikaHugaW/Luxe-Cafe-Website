@@ -1,41 +1,32 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import React from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const pathname = usePathname()
-  const isMenuPage = pathname === '/menu'
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
   const navItems = [
-    { name: 'Our People', href: '/#about', pageHref: '/#about' },
-    { name: 'Our Menu', href: '/menu', pageHref: '/#menu' },
-    { name: 'Private Events', href: '/#contact', pageHref: '/#contact' },
+    { name: 'Home', href: '/' },
+    { name: 'Menu', href: '/menu' },
+    { name: 'About', href: '/about' },
+    { name: 'Gallery', href: '/gallery' },
+    { name: 'Contact', href: '/contact' },
   ]
 
-  const scrollToSection = (href: string) => {
-    if (href.startsWith('#')) {
-      const element = document.querySelector(href)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
-      }
-    }
-  }
-
-  const handleNavClick = (item: { href: string; pageHref: string }) => {
-    if (isMenuPage && item.href === '/menu') {
-      // Jika sudah di halaman menu, scroll ke atas
+  const handleNavClick = (e: React.MouseEvent, item: { href: string }) => {
+    e.preventDefault()
+    // Jika link ke halaman yang sama, tidak perlu navigasi
+    if (pathname === item.href) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    } else if (item.href.startsWith('/#')) {
-      // Jika link dengan hash, scroll ke section
-      if (pathname === '/') {
-        scrollToSection(item.href.replace('/', ''))
-      } else {
-        // Jika di halaman lain, redirect ke home dengan hash
-        window.location.href = item.href
-      }
+      return
     }
+    // Navigasi ke halaman lain
+    window.location.href = item.href
   }
 
   return (
@@ -51,18 +42,76 @@ export default function Navbar() {
             </motion.div>
           </Link>
 
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => handleNavClick(item)}
-                className="text-sm font-medium text-dark-blue hover:opacity-70 transition-opacity"
-              >
-                {item.name}
-              </button>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item)}
+                  className={`text-sm font-medium transition-all relative ${
+                    isActive 
+                      ? 'text-dark-blue border-b-2 border-dark-blue pb-1' 
+                      : 'text-dark-blue/70 hover:text-dark-blue'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-dark-blue"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden border-t border-gray-200/50"
+            >
+              <div className="py-4 space-y-2">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={(e) => {
+                        handleNavClick(e, item)
+                        setMobileMenuOpen(false)
+                      }}
+                      className={`block px-4 py-2 text-sm font-medium transition-all ${
+                        isActive
+                          ? 'text-dark-blue bg-dark-blue/5 border-l-4 border-dark-blue'
+                          : 'text-dark-blue/70 hover:text-dark-blue hover:bg-dark-blue/5'
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   )
