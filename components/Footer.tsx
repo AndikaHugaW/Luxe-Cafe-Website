@@ -22,8 +22,10 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="bg-dark-blue text-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 lg:py-16">
+    <footer className="bg-dark-blue text-white relative overflow-hidden">
+      {/* Solid background layer to cover any decorative lines */}
+      <div className="absolute inset-0 bg-dark-blue z-0"></div>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 lg:py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand Section */}
           <motion.div
@@ -157,7 +159,7 @@ export default function Footer() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 pt-8 border-t border-white/10"
+          className="mt-12 pt-8"
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
             <p>

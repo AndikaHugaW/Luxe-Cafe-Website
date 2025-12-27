@@ -1,61 +1,37 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Coffee, Users, Clock } from 'lucide-react'
+import { FeatureSteps } from '@/components/ui/feature-steps'
 
 const features = [
-  {
-    icon: Coffee,
+  { 
+    step: 'Step 1', 
     title: 'Our Menu',
-    description: 'Discover our handcrafted beverages and artisanal pastries'
+    content: 'Discover our handcrafted beverages and artisanal pastries made with premium ingredients.', 
+    image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=2070&auto=format&fit=crop' 
   },
-  {
-    icon: Users,
+  { 
+    step: 'Step 2',
     title: 'Our People',
-    description: 'Meet the passionate team behind every cup'
+    content: 'Meet the passionate team behind every cup, dedicated to creating memorable experiences.',
+    image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=2047&auto=format&fit=crop'
   },
-  {
-    icon: Clock,
+  { 
+    step: 'Step 3',
     title: 'Our History',
-    description: 'Learn about our journey and culinary traditions'
+    content: 'Learn about our journey and culinary traditions inspired by our beloved French grandmother.',
+    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070&auto=format&fit=crop'
   },
 ]
 
 export default function Features() {
   return (
-    <section className="py-20 px-6 lg:px-8 bg-cream">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-          {features.map((feature, index) => {
-            const Icon = feature.icon
-            return (
-              <motion.div
-                key={index}
-                className="text-center"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <div className="flex justify-center mb-6">
-                  <Icon 
-                    className="w-16 h-16 text-dark-blue stroke-1" 
-                    strokeWidth={1.5}
-                    style={{ strokeLinecap: 'round', strokeLinejoin: 'round' }}
-                  />
-                </div>
-                <h3 className="text-lg font-medium text-dark-blue mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-dark-blue/70">
-                  {feature.description}
-                </p>
-              </motion.div>
-            )
-          })}
-        </div>
-      </div>
+    <section className="py-32 px-8 lg:px-16 xl:px-24 bg-cream">
+      <FeatureSteps 
+        features={features}
+        title="Discover LUXE Experience"
+        autoPlayInterval={4000}
+        imageHeight="h-[700px]"
+      />
     </section>
   )
 }
-

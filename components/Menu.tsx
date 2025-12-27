@@ -2,8 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { Star, Coffee, GlassWater, Cookie, Shirt } from 'lucide-react'
+import { Star, Coffee, GlassWater, Cookie, Shirt, ShoppingCart } from 'lucide-react'
 import { useMenu } from '@/hooks/useMenu'
+import { useAuth } from '@/context/AuthContext'
+import AuthModal from './AuthModal'
 
 const categories = [
   { id: 'bestseller', name: 'Best Seller', icon: Star },
@@ -128,6 +130,8 @@ const menuData = {
 
 export default function Menu() {
   const [activeCategory, setActiveCategory] = useState('bestseller')
+  const { user } = useAuth()
+  const [authModalOpen, setAuthModalOpen] = useState(false)
   
   // Try to use API, fallback to local data
   const { menuItems: apiItems, loading, error } = useMenu(activeCategory)
@@ -166,8 +170,8 @@ export default function Menu() {
                 onClick={() => setActiveCategory(category.id)}
                 className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 ${
                   isActive
-                    ? 'bg-dark-blue text-cream'
-                    : 'bg-white text-dark-blue border border-dark-blue/20 hover:border-dark-blue/40'
+                    ? 'bg-primary text-cream'
+                    : 'bg-white text-dark-blue border border-primary/20 hover:border-primary/40'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -250,16 +254,37 @@ export default function Menu() {
                   {item.description}
                 </p>
 
-                {/* Price */}
-                <div className="mt-auto pt-3 border-t border-dashed border-dark-blue/20">
+                {/* Price & Action */}
+                <div className="mt-auto pt-3 border-t border-dashed border-primary/20 flex items-center justify-between">
                   <span className="text-2xl font-bold text-dark-blue">
                     {item.price}
                   </span>
+                  
+                  <motion.button
+                    onClick={() => {
+                      if (!user) {
+                        setAuthModalOpen(true)
+                      } else {
+                        alert(`Pesanan ${item.name} berhasil ditambahkan!`)
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all shadow-md active:scale-95"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    Order
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
+
+        <AuthModal 
+          isOpen={authModalOpen} 
+          onClose={() => setAuthModalOpen(false)} 
+          initialView="login" 
+        />
 
         {/* Empty State */}
         {currentItems.length === 0 && (

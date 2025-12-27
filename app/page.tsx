@@ -15,15 +15,13 @@ export default function Home() {
     <main id="home" className="relative bg-cream">
       <Navbar />
       <Hero />
-      <About />
       <AboutDetail />
       <Features />
       <LargeLogo />
-      <MenuPreview />
       <Membership />
+      <MenuPreview />
       <Testimonials />
       <Newsletter />
-      <Footer />
     </main>
   )
 }

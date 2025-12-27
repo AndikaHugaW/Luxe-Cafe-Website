@@ -60,7 +60,7 @@ export default function MenuPreview() {
                 </p>
 
                 {/* Price */}
-                <div className="mt-auto pt-3 border-t border-dashed border-dark-blue/20">
+                <div className="mt-auto pt-3 border-t border-dashed border-primary/20">
                   <span className="text-2xl font-bold text-dark-blue">
                     {item.price}
                   </span>
@@ -79,7 +79,7 @@ export default function MenuPreview() {
         >
           <Link href="/menu">
             <motion.button
-              className="px-8 py-3 bg-dark-blue text-cream rounded-full font-medium hover:bg-dark-blue/90 transition-colors"
+              className="px-8 py-3 bg-primary text-cream rounded-full font-medium hover:bg-primary/90 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

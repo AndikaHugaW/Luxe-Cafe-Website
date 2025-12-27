@@ -12,6 +12,14 @@ module.exports = {
         foreground: 'var(--foreground)',
         'dark-blue': '#1a2332',
         'cream': '#faf8f5',
+        'primary': '#ff6b35',
+        'primary-dark': '#e55a2b',
+        'primary-light': '#ff8c61',
+        card: {
+          DEFAULT: '#ffffff',
+          foreground: '#1a2332',
+        },
+        'muted-foreground': '#6b7280',
       },
       animation: {
         'blob': 'blob 7s infinite',

@@ -1,5 +1,5 @@
 import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import Newsletter from '@/components/Newsletter'
 import About from '@/components/About'
 import AboutDetail from '@/components/AboutDetail'
 import Features from '@/components/Features'
@@ -9,11 +9,10 @@ export default function AboutPage() {
     <main className="relative bg-cream">
       <Navbar />
       <div className="pt-16">
-        <About />
         <AboutDetail />
         <Features />
       </div>
-      <Footer />
+      <Newsletter />
     </main>
   )
 }

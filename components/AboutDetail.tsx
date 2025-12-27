@@ -7,10 +7,10 @@ export default function AboutDetail() {
   return (
     <section className="py-20 px-6 lg:px-8 bg-cream">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           {/* Left Side - Large Image */}
           <motion.div
-            className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden"
+            className="relative h-[600px] lg:h-full rounded-2xl overflow-hidden"
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}

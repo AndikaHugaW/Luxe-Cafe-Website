@@ -36,7 +36,7 @@ export default function Contact() {
                 <input
                   type="text"
                   placeholder="First Name"
-                  className="w-full px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-dark-blue/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-primary/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                   required
                 />
               </div>
@@ -44,7 +44,7 @@ export default function Contact() {
                 <input
                   type="text"
                   placeholder="Last Name"
-                  className="w-full px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-dark-blue/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-primary/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                   required
                 />
               </div>
@@ -55,7 +55,7 @@ export default function Contact() {
               <input
                 type="tel"
                 placeholder="Phone"
-                className="w-full px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-dark-blue/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                className="w-full px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-primary/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                 required
               />
             </div>
@@ -66,13 +66,13 @@ export default function Contact() {
                 <input
                   type="email"
                   placeholder="Email Address"
-                  className="w-full px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-dark-blue/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-primary/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                   required
                 />
               </div>
               <motion.button
                 type="submit"
-                className="px-6 lg:px-8 py-4 bg-dark-blue text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-dark-blue/90 transition-all group whitespace-nowrap"
+                className="px-6 lg:px-8 py-4 bg-primary text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all group whitespace-nowrap"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -86,7 +86,7 @@ export default function Contact() {
               <textarea
                 placeholder="Message"
                 rows={6}
-                className="w-full h-full min-h-[150px] px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-dark-blue/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all resize-none"
+                className="w-full h-full min-h-[150px] px-4 py-4 rounded-lg bg-white text-dark-blue placeholder-primary/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all resize-none"
                 required
               />
             </div>

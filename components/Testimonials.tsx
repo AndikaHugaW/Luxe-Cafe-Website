@@ -1,177 +1,100 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Quote } from 'lucide-react'
+import { TestimonialsColumn } from "@/components/ui/testimonials-columns"
+import { motion } from "framer-motion"
 
 const testimonials = [
   {
-    id: 1,
-    name: 'John Smith',
-    title: 'Founder Main Street Bakery',
-    text: 'LUXE CAFE has completely transformed how I work. The coffee is amazing, the space is inspiring, and the vibe is always welcoming!',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop'
+    text: "LUXE CAFE has completely transformed how I work. The coffee is amazing, the space is inspiring, and the vibe is always welcoming!",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+    name: "Sarah Johnson",
+    role: "Creative Director",
   },
   {
-    id: 2,
-    name: 'Sarah Johnson',
-    title: 'Creative Director',
-    text: 'LUXE CAFE has completely transformed how I work. The coffee is amazing, the space is inspiring, and the vibe is always welcoming!',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop'
+    text: "The perfect blend of premium coffee and productive workspace. I've found my second office here!",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+    name: "Michael Chen",
+    role: "Entrepreneur",
   },
   {
-    id: 3,
-    name: 'Michael Chen',
-    title: 'Founder Tech Startup',
-    text: 'LUXE CAFE has completely transformed how I work. The coffee is amazing, the space is inspiring, and the vibe is always welcoming!',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop'
+    text: "From the artisanal pastries to the cozy atmosphere, everything about LUXE CAFE is exceptional. Highly recommend!",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+    name: "Emma Williams",
+    role: "Marketing Manager",
   },
   {
-    id: 4,
-    name: 'Emily Davis',
-    title: 'Freelance Designer',
-    text: 'LUXE CAFE has completely transformed how I work. The coffee is amazing, the space is inspiring, and the vibe is always welcoming!',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop'
+    text: "The Bronze membership has been a game-changer for my productivity. Great amenities and even better coffee!",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
+    name: "David Rodriguez",
+    role: "Software Developer",
   },
   {
-    id: 5,
-    name: 'David Wilson',
-    title: 'Marketing Consultant',
-    text: 'LUXE CAFE has completely transformed how I work. The coffee is amazing, the space is inspiring, and the vibe is always welcoming!',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop'
+    text: "I love the community vibe here. Met so many interesting people while enjoying the best latte in town!",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop",
+    name: "Lisa Anderson",
+    role: "Freelance Designer",
+  },
+  {
+    text: "The team at LUXE CAFE truly cares about their customers. Every visit feels special and personalized.",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop",
+    name: "James Taylor",
+    role: "Business Consultant",
+  },
+  {
+    text: "Best coffee shop for remote work! Fast WiFi, comfortable seating, and the coffee keeps me energized all day.",
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop",
+    name: "Sophia Martinez",
+    role: "Content Writer",
+  },
+  {
+    text: "The Gold membership is worth every penny. Unlimited office time and premium coffee selection - what more could I ask for?",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop",
+    name: "Ryan Thompson",
+    role: "Startup Founder",
+  },
+  {
+    text: "LUXE CAFE has become my go-to spot for client meetings. Professional atmosphere with a warm, welcoming touch.",
+    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop",
+    name: "Olivia Brown",
+    role: "Account Executive",
   },
 ]
 
+const firstColumn = testimonials.slice(0, 3)
+const secondColumn = testimonials.slice(3, 6)
+const thirdColumn = testimonials.slice(6, 9)
+
 export default function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const totalTestimonials = testimonials.length
-  const visibleTestimonials = testimonials.slice(currentIndex, currentIndex + 3)
-
-  const nextTestimonial = () => {
-    setCurrentIndex((prev) => (prev + 1) % (totalTestimonials - 2))
-  }
-
-  const prevTestimonial = () => {
-    setCurrentIndex((prev) => (prev - 1 + (totalTestimonials - 2)) % (totalTestimonials - 2))
-  }
-
-  const currentPage = currentIndex + 1
-  const totalPages = totalTestimonials - 2
-
   return (
-    <section className="py-20 px-6 lg:px-8 bg-cream">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <p className="text-sm uppercase tracking-wider text-dark-blue/60 font-semibold mb-2">
-              TESTIMONIALS
-            </p>
-            <h2 className="text-4xl lg:text-5xl font-bold text-dark-blue leading-tight">
-              What our clients say
-            </h2>
-          </motion.div>
+    <section className="bg-cream py-24 px-8 lg:px-16 xl:px-24 relative overflow-hidden">
+      <div className="container z-10 mx-auto max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true }}
+          className="flex flex-col items-center justify-center max-w-[640px] mx-auto"
+        >
+          <div className="flex justify-center">
+            <div className="border border-primary/20 bg-white py-2 px-5 rounded-full text-sm font-medium text-dark-blue uppercase tracking-wider">
+              Testimonials
+            </div>
+          </div>
 
-          {/* Navigation Controls */}
-          <motion.div
-            className="flex items-center gap-4"
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <button
-              onClick={prevTestimonial}
-              className="w-10 h-10 rounded-full border border-dark-blue/20 flex items-center justify-center hover:bg-dark-blue hover:text-white transition-all"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <span className="text-sm text-dark-blue/60 font-medium min-w-[50px] text-center">
-              {String(currentPage).padStart(2, '0')}/{String(totalPages).padStart(2, '0')}
-            </span>
-            <button
-              onClick={nextTestimonial}
-              className="w-10 h-10 rounded-full bg-dark-blue text-white flex items-center justify-center hover:bg-dark-blue/90 transition-all"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </motion.div>
-        </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mt-6 text-dark-blue text-center">
+            What our clients say
+          </h2>
+          <p className="text-center mt-5 text-dark-blue/70 text-lg leading-relaxed">
+            Discover why our customers love the LUXE CAFE experience.
+          </p>
+        </motion.div>
 
-        {/* Testimonial Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
-          {visibleTestimonials.map((testimonial, index) => (
-            <motion.div
-              key={testimonial.id}
-              className="group relative bg-white rounded-2xl p-8 lg:p-10 shadow-lg hover:shadow-2xl border border-dark-blue/5 hover:border-dark-blue/10 transition-all duration-500 overflow-hidden"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -5 }}
-            >
-              {/* Decorative Gradient Background */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-dark-blue/5 to-transparent rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              {/* Quote Icon */}
-              <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-dark-blue/5 flex items-center justify-center opacity-50 group-hover:opacity-100 group-hover:bg-dark-blue/10 transition-all duration-300">
-                <Quote className="w-6 h-6 text-dark-blue/40 group-hover:text-dark-blue/60" />
-              </div>
-
-              {/* Client Info */}
-              <div className="flex flex-col items-center text-center mb-6 relative z-10">
-                {/* Avatar with decorative ring */}
-                <div className="relative mb-4">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-dark-blue/20 to-dark-blue/10 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 ring-4 ring-dark-blue/5 group-hover:ring-dark-blue/10 transition-all duration-300 shadow-lg">
-                    <div 
-                      className="w-full h-full bg-cover bg-center"
-                      style={{ backgroundImage: `url(${testimonial.avatar})` }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-bold text-dark-blue text-lg lg:text-xl mb-1.5">
-                    {testimonial.name}
-                  </h4>
-                  <p className="text-sm text-dark-blue/60 font-medium">
-                    {testimonial.title}
-                  </p>
-                </div>
-
-                {/* Rating Stars */}
-                <div className="flex gap-1 mt-3">
-                  {[...Array(5)].map((_, i) => (
-                    <svg
-                      key={i}
-                      className="w-4 h-4 text-amber-400 fill-current"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-
-              {/* Testimonial Text */}
-              <div className="relative z-10">
-                <p className="text-dark-blue/80 text-base lg:text-lg leading-relaxed text-center font-light">
-                  "{testimonial.text}"
-                </p>
-              </div>
-
-              {/* Bottom Accent Line */}
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-dark-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </motion.div>
-          ))}
+        <div className="flex justify-center gap-6 mt-16 [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)] max-h-[740px] overflow-hidden">
+          <TestimonialsColumn testimonials={firstColumn} duration={15} />
+          <TestimonialsColumn testimonials={secondColumn} className="hidden md:block" duration={19} />
+          <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
         </div>
       </div>
     </section>
   )
 }
-

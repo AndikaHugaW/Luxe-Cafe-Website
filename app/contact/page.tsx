@@ -1,5 +1,5 @@
 import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import Newsletter from '@/components/Newsletter'
 import Contact from '@/components/Contact'
 
 export default function ContactPage() {
@@ -7,7 +7,7 @@ export default function ContactPage() {
     <main className="relative bg-cream min-h-screen">
       <Navbar />
       <Contact />
-      <Footer />
+      <Newsletter />
     </main>
   )
 }
