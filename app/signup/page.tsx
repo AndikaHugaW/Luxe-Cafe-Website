@@ -9,9 +9,45 @@ import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Newsletter from '@/components/Newsletter'
 import { useId } from "react"
+import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
   const id = useId()
+  const router = useRouter()
+  const [name, setName] = React.useState('')
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState('')
+  const [success, setSuccess] = React.useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong')
+      }
+
+      setSuccess(true)
+      setTimeout(() => {
+        router.push('/login')
+      }, 2000)
+    } catch (err: any) {
+      setError(err.message)
+      setLoading(false)
+    }
+  }
 
   return (
     <main className="min-h-screen bg-cream flex flex-col">
@@ -39,15 +75,43 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <form className="space-y-5">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-bold text-center">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-100 rounded-xl text-green-600 text-xs font-bold text-center">
+              Account created! Redirecting to login...
+            </div>
+          )}
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor={`${id}-name`}>Full Name</Label>
-                <Input id={`${id}-name`} placeholder="Matt Welsh" type="text" required className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary" />
+                <Input 
+                  id={`${id}-name`} 
+                  placeholder="Matt Welsh" 
+                  type="text" 
+                  required 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary" 
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`${id}-email`}>Email</Label>
-                <Input id={`${id}-email`} placeholder="your@email.com" type="email" required className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary" />
+                <Input 
+                  id={`${id}-email`} 
+                  placeholder="your@email.com" 
+                  type="email" 
+                  required 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary" 
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`${id}-password`}>Password</Label>
@@ -56,12 +120,18 @@ export default function SignupPage() {
                   placeholder="Create a password"
                   type="password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary"
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white h-11 text-base font-semibold transition-all">
-              Sign Up
+            <Button 
+              type="submit" 
+              disabled={loading || success}
+              className="w-full bg-primary hover:bg-primary-dark text-white h-11 text-base font-semibold transition-all"
+            >
+              {loading ? 'Creating account...' : 'Sign Up'}
             </Button>
           </form>
 

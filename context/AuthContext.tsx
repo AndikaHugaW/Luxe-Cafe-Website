@@ -1,64 +1,57 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { User } from '@supabase/supabase-js'
+import React, { createContext, useContext } from 'react'
+import { SessionProvider, useSession, signOut as nextAuthSignOut } from 'next-auth/react'
+
+interface User {
+  id: string
+  email: string
+  name?: string | null
+  image?: string | null
+  role?: string | null
+}
 
 interface AuthContextType {
   user: User | null
   loading: boolean
-  signOut: () => Promise<void>
+  signOut: () => void
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
-  signOut: async () => {},
+  loading: false,
+  signOut: () => {},
 })
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!supabase) {
-      setLoading(false)
-      return
-    }
-
-    // Check active sessions and sets the user
-    const getSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-        setUser(session?.user ?? null)
-      } catch (err) {
-        console.error('Supabase auth error:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    getSession()
-
-    // Listen for changes on auth state (sign in, sign out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const signOut = async () => {
-    if (supabase) {
-      await supabase.auth.signOut()
-    }
-  }
+function AuthContextProvider({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession()
+  
+  const user = session?.user ? {
+    id: (session.user as any).id || '',
+    email: session.user.email || '',
+    name: session.user.name,
+    image: session.user.image,
+    role: (session.user as any).role || 'user',
+  } : null
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading: status === 'loading',
+      signOut: () => nextAuthSignOut()
+    }}>
       {children}
     </AuthContext.Provider>
+  )
+}
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <SessionProvider>
+      <AuthContextProvider>
+        {children}
+      </AuthContextProvider>
+    </SessionProvider>
   )
 }
 

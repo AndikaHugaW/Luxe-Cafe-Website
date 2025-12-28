@@ -4,10 +4,10 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 
 const previewItems = [
-  { id: 1, name: 'Caramel Macchiato', description: 'Sweet caramel with smooth espresso and steamed milk', price: 'Rp 42.000' },
-  { id: 2, name: 'Matcha Latte', description: 'Premium matcha with creamy oat milk', price: 'Rp 38.000' },
-  { id: 3, name: 'Chocolate Cake', description: 'Decadent chocolate cake with ganache frosting', price: 'Rp 55.000' },
-  { id: 4, name: 'Croissant', description: 'Buttery, flaky French croissant', price: 'Rp 28.000' },
+  { id: 1, name: 'Caramel Macchiato', description: 'Sweet caramel with smooth espresso and steamed milk', price: 'Rp 42.000', image_url: 'https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=800' },
+  { id: 2, name: 'Matcha Latte', description: 'Premium matcha with creamy oat milk', price: 'Rp 38.000', image_url: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=800' },
+  { id: 3, name: 'Chocolate Cake', description: 'Decadent chocolate cake with ganache frosting', price: 'Rp 55.000', image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800' },
+  { id: 4, name: 'Croissant', description: 'Buttery, flaky French croissant', price: 'Rp 28.000', image_url: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800' },
 ]
 
 export default function MenuPreview() {
@@ -33,37 +33,42 @@ export default function MenuPreview() {
           {previewItems.map((item, index) => (
             <motion.div
               key={item.id}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
+              className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col border border-primary/5"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              whileHover={{ y: -4 }}
             >
               {/* Product Image */}
-              <div className="w-full h-72 bg-gray-100 flex items-center justify-center relative overflow-hidden">
-                <div className="text-center text-gray-400 text-sm">
-                  <p>Product Image</p>
-                </div>
+              <div className="relative w-full h-72 overflow-hidden">
+                <motion.img 
+                  src={item.image_url} 
+                  alt={item.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-dark-blue/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
 
               {/* Content */}
-              <div className="p-5 flex flex-col flex-1">
-                {/* Title */}
-                <h3 className="text-lg font-bold text-dark-blue mb-2">
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-xl font-bold text-dark-blue mb-2 transition-colors group-hover:text-primary">
                   {item.name}
                 </h3>
 
-                {/* Description */}
-                <p className="text-sm text-dark-blue/70 leading-relaxed mb-4 flex-1">
+                <p className="text-sm text-dark-blue/60 leading-relaxed mb-6 line-clamp-2">
                   {item.description}
                 </p>
 
-                {/* Price */}
-                <div className="mt-auto pt-3 border-t border-dashed border-primary/20">
-                  <span className="text-2xl font-bold text-dark-blue">
+                <div className="mt-auto pt-4 border-t border-primary/10 flex items-center justify-between">
+                  <span className="text-xl font-black text-dark-blue">
                     {item.price}
                   </span>
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary transform scale-0 group-hover:scale-100 transition-transform duration-500">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             </motion.div>

@@ -36,7 +36,7 @@ export default function AboutDetail() {
                 ABOUT US
               </p>
               <h2 className="text-4xl lg:text-5xl font-bold text-dark-blue mb-6 lg:mb-8 leading-tight">
-                Where We Do Business –<br />LUXE CAFE
+                Experience The Perfect<br />Blend Of Coffee & Vibes
               </h2>
               <p className="text-lg lg:text-xl text-dark-blue/80 leading-relaxed">
                 LUXE CAFE aims to create a flexible co-working environment that provides solutions 

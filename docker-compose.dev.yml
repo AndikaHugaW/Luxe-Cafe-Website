@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: luxe_cafe_db_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: luxe_admin
+      POSTGRES_PASSWORD: luxe_password_2024
+      POSTGRES_DB: luxe_cafe
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U luxe_admin -d luxe_cafe"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - luxe_network_dev
+
+  # Next.js Development Server
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: luxe_cafe_app_dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://luxe_admin:luxe_password_2024@postgres:5432/luxe_cafe
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=dev-secret-key
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - luxe_network_dev
+    command: npm run dev
+
+networks:
+  luxe_network_dev:
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+    driver: local

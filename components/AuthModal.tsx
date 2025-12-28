@@ -12,7 +12,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { supabase } from '@/lib/supabase'
+import { signIn } from 'next-auth/react'
+import { Eye, EyeOff } from 'lucide-react'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -27,42 +28,78 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
   const id = useId()
 
   // Update view when initialView changes and modal re-opens
   React.useEffect(() => {
     setView(initialView)
     setError(null)
+    setSuccess(null)
   }, [initialView, isOpen])
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setSuccess(null)
 
     try {
       if (view === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({
+        // Login with NextAuth
+        const result = await signIn('credentials', {
           email,
           password,
+          redirect: false,
         })
-        if (error) throw error
+
+        if (result?.error) {
+          setError('Invalid email or password')
+        } else if (result?.ok) {
+          setSuccess('Login successful!')
+          setTimeout(() => {
+            onClose()
+            // Refresh to update session
+            window.location.reload()
+          }, 1000)
+        }
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: fullName,
-            }
-          }
+        // Signup
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email, 
+            password, 
+            name: fullName 
+          }),
         })
-        if (error) throw error
-        alert('Cek email Anda untuk konfirmasi pendaftaran!')
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          setError(data.error || 'Signup failed')
+        } else {
+          // Save email for login
+          const signupEmail = email
+          const signupPassword = password
+          
+          setSuccess('✅ Account created successfully! Switching to login...')
+          
+          // Switch to login view after successful signup
+          setTimeout(() => {
+            setView('login')
+            setEmail(signupEmail) // Pre-fill email
+            setPassword(signupPassword) // Pre-fill password for convenience
+            setFullName('') // Clear name
+            setSuccess('Now you can login with your credentials')
+            setError(null)
+          }, 2000)
+        }
       }
-      onClose()
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message || 'An error occurred')
     } finally {
       setLoading(false)
     }
@@ -105,6 +142,11 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                   {error}
                 </div>
               )}
+              {success && (
+                <div className="p-3 text-sm text-green-600 bg-green-50 rounded-lg border border-green-200">
+                  {success}
+                </div>
+              )}
               <div className="space-y-4">
                 {view === 'signup' && (
                   <div className="space-y-2">
@@ -139,15 +181,29 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
                       <a href="#" className="text-xs text-primary hover:underline">Forgot?</a>
                     )}
                   </div>
-                  <Input
-                    id={`${id}-password`}
-                    placeholder={view === 'login' ? "Enter your password" : "Create a password"}
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary h-11"
-                  />
+                  <div className="relative">
+                    <Input
+                      id={`${id}-password`}
+                      placeholder={view === 'login' ? "Enter your password" : "Create a password"}
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary h-11 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
               <Button 
@@ -165,26 +221,22 @@ export default function AuthModal({ isOpen, onClose, initialView }: AuthModalPro
           <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Or continue with</span>
         </div>
 
-        <Button variant="outline" className="w-full h-12 border-dark-blue/20 text-dark-blue hover:bg-dark-blue/5 transition-all flex items-center justify-center gap-3 text-base font-medium">
-          <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
-            <path
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              fill="#4285F4"
-            />
-            <path
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              fill="#34A853"
-            />
-            <path
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              fill="#FBBC05"
-            />
-            <path
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              fill="#EA4335"
-            />
+        <Button 
+          type="button"
+          variant="outline"
+          onClick={() => signIn('google', { callbackUrl: '/' })}
+          disabled={loading}
+          className="w-full h-12 border-2 border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 transition-all flex items-center justify-center gap-3 text-base font-medium text-gray-700 shadow-sm hover:shadow-md group disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg className="h-6 w-6 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
+              <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
+              <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/>
+              <path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"/>
+              <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"/>
+            </g>
           </svg>
-          <span className="translate-y-[0.5px]">Google</span>
+          <span className="font-semibold">Continue with Google</span>
         </Button>
 
         <p className="mt-6 text-center text-sm text-dark-blue/60">

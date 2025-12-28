@@ -1,40 +1,28 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { query } from '@/lib/db'
+import { MenuItem } from '@/lib/types/menu'
 
 // GET - Ambil semua menu berdasarkan kategori
 export async function GET(request: Request) {
   try {
-    // Check if Supabase is configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      return NextResponse.json(
-        { error: 'Supabase tidak dikonfigurasi. Pastikan environment variables sudah di-set.' },
-        { status: 503 }
-      )
-    }
-
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
 
-    let query = supabase
-      .from('menu_items')
-      .select('*')
-      .order('id', { ascending: true })
+    let sqlQuery = 'SELECT * FROM menu_items'
+    const params: any[] = []
 
     if (category) {
-      query = query.eq('category', category)
+      sqlQuery += ' WHERE category = $1'
+      params.push(category)
     }
 
-    const { data, error } = await query
+    sqlQuery += ' ORDER BY id ASC'
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      )
-    }
+    const result = await query<MenuItem>(sqlQuery, params)
 
-    return NextResponse.json({ data: data || [] }, { status: 200 })
+    return NextResponse.json({ data: result.rows }, { status: 200 })
   } catch (error) {
+    console.error('Error fetching menu items:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -55,33 +43,26 @@ export async function POST(request: Request) {
       )
     }
 
-    const { data, error } = await supabase
-      .from('menu_items')
-      .insert([
-        {
-          name,
-          description,
-          price,
-          category,
-          image_url: image_url || null,
-        },
-      ])
-      .select()
-      .single()
+    const sqlQuery = `
+      INSERT INTO menu_items (name, description, price, category, image_url)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      )
-    }
+    const result = await query<MenuItem>(sqlQuery, [
+      name,
+      description,
+      price,
+      category,
+      image_url || null,
+    ])
 
-    return NextResponse.json({ data }, { status: 201 })
+    return NextResponse.json({ data: result.rows[0] }, { status: 201 })
   } catch (error) {
+    console.error('Error creating menu item:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
   }
 }
-

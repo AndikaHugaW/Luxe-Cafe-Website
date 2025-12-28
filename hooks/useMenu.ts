@@ -1,17 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { MenuItem, MenuCategory } from '@/lib/types/menu'
+import { getMenuItems, getMenuItemsByCategory } from '@/lib/api/menu'
 
-interface MenuItem {
-  id: number
-  name: string
-  description: string
-  price: string
-  category: string
-  image_url?: string | null
-}
-
-export function useMenu(category?: string) {
+/**
+ * Custom hook untuk fetch menu items
+ * @param category - Optional category filter
+ * @returns Menu items, loading state, error, and refetch function
+ */
+export function useMenu(category?: MenuCategory) {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -21,43 +19,13 @@ export function useMenu(category?: string) {
       try {
         setLoading(true)
         setError(null)
-        const url = category 
-          ? `/api/menu?category=${category}`
-          : '/api/menu'
-        
-        const response = await fetch(url)
-        
-        if (!response.ok) {
-          // Don't throw, just set error and return empty array
-          setError('API tidak tersedia, menggunakan data lokal')
-          setMenuItems([])
-          return
-        }
-        
-        const result = await response.json()
-        
-        // Handle error response from API
-        if (result.error) {
-          setError('API error: ' + result.error)
-          setMenuItems([])
-          return
-        }
-        
-        // Handle both array response and object with data property
-        const items = Array.isArray(result) ? result : (result.data || [])
-        
-        if (items.length > 0) {
-          setMenuItems(items)
-          setError(null)
-        } else {
-          setError('Tidak ada data dari API, menggunakan data lokal')
-          setMenuItems([])
-        }
+        const data = await getMenuItems(category)
+        setMenuItems(data)
       } catch (err) {
-        // Silently fail and use local data
-        setError('API tidak tersedia, menggunakan data lokal')
+        // Silently fail and use empty array
+        setError(err instanceof Error ? err.message : 'API tidak tersedia')
         setMenuItems([])
-        console.warn('Error fetching menu, using local data:', err)
+        console.warn('Error fetching menu:', err)
       } finally {
         setLoading(false)
       }
@@ -66,6 +34,44 @@ export function useMenu(category?: string) {
     fetchMenu()
   }, [category])
 
-  return { menuItems, loading, error }
+  const refetch = () => {
+    setLoading(true)
+  }
+
+  return { menuItems, loading, error, refetch }
 }
 
+/**
+ * Custom hook untuk fetch menu items grouped by category
+ * @returns Menu items grouped by category, loading state, error, and refetch function
+ */
+export function useMenuByCategory() {
+  const [groupedItems, setGroupedItems] = useState<Record<MenuCategory, MenuItem[]> | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchGroupedItems() {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await getMenuItemsByCategory()
+        setGroupedItems(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch menu items')
+        setGroupedItems(null)
+        console.warn('Error fetching grouped menu:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchGroupedItems()
+  }, [])
+
+  const refetch = () => {
+    setLoading(true)
+  }
+
+  return { groupedItems, loading, error, refetch }
+}

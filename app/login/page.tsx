@@ -9,9 +9,41 @@ import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Newsletter from '@/components/Newsletter'
 import { useId } from "react"
+import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 
 export default function LoginPage() {
   const id = useId()
+  const router = useRouter()
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false
+      })
+
+      if (result?.error) {
+        setError('Invalid email or password')
+        setLoading(false)
+      } else {
+        router.push('/')
+        router.refresh()
+      }
+    } catch (err) {
+      setError('An unexpected error occurred')
+      setLoading(false)
+    }
+  }
 
   return (
     <main className="min-h-screen bg-cream flex flex-col">
@@ -39,11 +71,25 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <form className="space-y-5">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-bold text-center">
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor={`${id}-email`}>Email</Label>
-                <Input id={`${id}-email`} placeholder="your@email.com" type="email" required className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary" />
+                <Input 
+                  id={`${id}-email`} 
+                  placeholder="your@email.com" 
+                  type="email" 
+                  required 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary" 
+                />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -55,12 +101,18 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   type="password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="border-dark-blue/20 focus-visible:ring-primary/20 focus-visible:border-primary"
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white h-11 text-base font-semibold transition-all">
-              Log In
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-primary hover:bg-primary-dark text-white h-11 text-base font-semibold transition-all"
+            >
+              {loading ? 'Logging in...' : 'Log In'}
             </Button>
           </form>
 

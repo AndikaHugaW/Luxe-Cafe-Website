@@ -3,20 +3,36 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Menu, X, User as UserIcon, LogOut } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Menu, X, LogOut, ShoppingCart, Heart } from 'lucide-react'
 import AuthModal from './AuthModal'
 import { useAuth } from '@/context/AuthContext'
+import { UserDropdown } from './ui/user-dropdown'
+import { NotificationDropdown } from './ui/notification-dropdown'
+import { CartDropdown } from './ui/cart-dropdown'
+import { WishlistDropdown } from './ui/wishlist-dropdown'
+import Image from 'next/image'
 
 export default function Navbar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { user, signOut } = useAuth()
+  // ... rest of component logic
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
-  const [userMenuOpen, setUserMenuOpen] = React.useState(false)
+  const [isScrolled, setIsScrolled] = React.useState(false)
   const [authModal, setAuthModal] = React.useState<{ isOpen: boolean, view: 'login' | 'signup' }>({
     isOpen: false,
     view: 'login'
   })
+
+  // Handle scroll for glassmorphism
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const navItems = [
     { name: 'Home', href: '/' },
@@ -25,6 +41,8 @@ export default function Navbar() {
     { name: 'Gallery', href: '/gallery' },
     { name: 'Contact', href: '/contact' },
   ]
+
+  const isHomeTop = pathname === '/' && !isScrolled
 
   const handleNavClick = (e: React.MouseEvent, item: { name: string; href: string }) => {
     // For home page sections, use smooth scroll
@@ -43,24 +61,51 @@ export default function Navbar() {
     setMobileMenuOpen(false)
   }
 
+  const handleProfileAction = (action: string) => {
+    const routes: Record<string, string> = {
+      'profile': '/profile',
+      'settings': '/settings',
+      'notifications': '/notifications',
+      'orders': '/orders',
+      'favorites': '/favorites',
+      'rewards': '/rewards',
+      'help': '/help',
+      'terms': '/terms'
+    }
+
+    if (routes[action]) {
+      router.push(routes[action])
+    }
+  }
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200/50 shadow-sm">
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled 
+          ? 'bg-white/80 backdrop-blur-lg border-b border-gray-200/50 shadow-sm py-0' 
+          : 'bg-transparent py-2'
+      }`}>
         <div className="max-w-full mx-auto px-8 lg:px-16 xl:px-24">
           <div className="flex items-center justify-between h-20">
             {/* Logo Container */}
             <div className="flex-1 flex items-center">
               <Link href="/">
                 <motion.div
-                  className="text-xl font-semibold text-dark-blue tracking-tight cursor-pointer"
-                  whileHover={{ opacity: 0.8 }}
+                  className="relative h-12 w-40 cursor-pointer"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  LUXE
+                  <Image
+                    src="/logo-nav.svg"
+                    alt="Luxe Cafe Logo"
+                    fill
+                    className="object-contain object-left"
+                    priority
+                  />
                 </motion.div>
               </Link>
             </div>
 
-            {/* Desktop Menu - Centered */}
             <div className="hidden md:flex items-center justify-center gap-8 flex-[2]">
               {navItems.map((item) => {
                 const isActive = pathname === item.href
@@ -72,7 +117,9 @@ export default function Navbar() {
                     className={`text-sm font-medium transition-all relative ${
                       isActive 
                         ? 'text-primary border-b-2 border-primary pb-1' 
-                        : 'text-black/50 hover:text-primary'
+                        : isHomeTop
+                          ? 'text-white/80 hover:text-white'
+                          : 'text-black/50 hover:text-primary'
                     }`}
                   >
                     {item.name}
@@ -84,49 +131,30 @@ export default function Navbar() {
             {/* Auth Buttons & Mobile Button Container */}
             <div className="flex-1 flex items-center justify-end gap-4">
               {/* Desktop Auth */}
-              <div className="hidden md:flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-6">
                 {user ? (
-                  <div className="relative">
-                    <motion.button
-                      onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-full border border-dark-blue/10 hover:bg-dark-blue/5 transition-all"
-                      whileHover={{ scale: 1.02 }}
-                    >
-                      <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center">
-                        <UserIcon className="w-4 h-4 text-primary" />
-                      </div>
-                      <span className="text-sm font-medium text-dark-blue max-w-[100px] truncate">
-                        {user.user_metadata.full_name || user.email}
-                      </span>
-                    </motion.button>
+                  <>
+                    {/* Notification Dropdown */}
+                    <NotificationDropdown isLight={isHomeTop} />
 
-                    <AnimatePresence>
-                      {userMenuOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 overflow-hidden"
-                        >
-                          <button
-                            onClick={() => {
-                              signOut()
-                              setUserMenuOpen(false)
-                            }}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
-                          >
-                            <LogOut className="w-4 h-4" />
-                            Log Out
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                    {/* Wishlist Dropdown */}
+                    <WishlistDropdown isLight={isHomeTop} />
+
+                    {/* Cart Dropdown */}
+                    <CartDropdown isLight={isHomeTop} />
+
+                    {/* User Dropdown */}
+                    <UserDropdown onAction={handleProfileAction} isLight={isHomeTop} />
+                  </>
                 ) : (
                   <>
                     <motion.button
                       onClick={() => openAuth('login')}
-                      className="px-5 py-2.5 text-sm font-medium text-dark-blue hover:text-primary transition-colors"
+                      className={`px-5 py-2.5 text-sm font-medium transition-colors ${
+                        pathname === '/' && !isScrolled
+                          ? 'text-white/90 hover:text-white'
+                          : 'text-dark-blue hover:text-primary'
+                      }`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -134,9 +162,9 @@ export default function Navbar() {
                     </motion.button>
                     <motion.button
                       onClick={() => openAuth('signup')}
-                      className="px-5 py-2.5 text-sm font-semibold bg-primary text-white rounded-lg hover:bg-white hover:text-primary border-2 border-primary transition-all shadow-md"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      className="px-6 py-2.5 text-sm font-bold bg-primary text-white rounded-full hover:bg-white hover:text-primary border-2 border-primary transition-all shadow-lg hover:shadow-primary/20"
+                      whileHover={{ scale: 1.05, y: -1 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       Sign Up
                     </motion.button>
@@ -146,7 +174,9 @@ export default function Navbar() {
 
               {/* Mobile Menu Button */}
               <button
-                className="md:hidden p-2 text-dark-blue"
+                className={`md:hidden p-2 transition-colors ${
+                  isHomeTop ? 'text-white' : 'text-dark-blue'
+                }`}
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle menu"
               >
